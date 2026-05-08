@@ -1,0 +1,87 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in USD"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "old_money",
+        "star_boy",
+        "essentials"
+      ],
+      "description": "Style category"
+    },
+    "collection": {
+      "type": "string",
+      "description": "Collection name"
+    },
+    "sizes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available sizes"
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available colors"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Primary product image"
+    },
+    "lifestyle_image_url": {
+      "type": "string",
+      "description": "Lifestyle/secondary image"
+    },
+    "stock": {
+      "type": "number",
+      "description": "Current stock quantity"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured on homepage"
+    },
+    "style_guide": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Styling suggestions"
+    },
+    "fabric": {
+      "type": "string",
+      "description": "Fabric composition"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "draft",
+        "archived"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "price",
+    "category"
+  ]
+}
