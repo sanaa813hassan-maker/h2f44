@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -59,7 +59,7 @@ export default function ProductDetail() {
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', productId],
     queryFn: async () => {
-      const products = await base44.entities.Product.filter({ id: productId });
+      const products = await api.products.filter({ id: productId });
       return products[0];
     },
     enabled: !!productId,
@@ -67,7 +67,7 @@ export default function ProductDetail() {
 
   const { data: relatedProducts = [] } = useQuery({
     queryKey: ['related-products', product?.category],
-    queryFn: () => base44.entities.Product.filter({ category: product.category, status: 'active' }, '-created_date', 4),
+    queryFn: () => api.products.filter({ category: product.category, status: 'active' }),
     enabled: !!product?.category,
   });
 
