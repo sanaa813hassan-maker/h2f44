@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import HeroSection from '../components/store/HeroSection';
@@ -10,7 +10,7 @@ const HERO_IMAGE = 'https://media.base44.com/images/public/69fdc9d7ee19d2366aeb5
 export default function Home() {
   const { data: products = [] } = useQuery({
     queryKey: ['featured-products'],
-    queryFn: () => base44.entities.Product.filter({ status: 'active' }, '-created_date', 6),
+    queryFn: () => api.products.filter({ status: 'active', limit: 6 }),
     initialData: [],
   });
 
