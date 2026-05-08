@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, X } from 'lucide-react';
@@ -15,12 +15,12 @@ export default function Orders() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['admin-orders'],
-    queryFn: () => base44.entities.Order.list('-created_date'),
+    queryFn: () => api.orders.list(),
     initialData: [],
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Order.update(id, data),
+    mutationFn: ({ id, data }) => api.orders.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       toast.success('Order updated');
