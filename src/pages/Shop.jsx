@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { api } from '@/api/apiClient';
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from '../components/store/ProductCard';
@@ -15,7 +15,7 @@ export default function Shop() {
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
-    queryFn: () => base44.entities.Product.filter({ status: 'active' }),
+    queryFn: () => api.products.filter({ status: 'active' }),
     initialData: [],
   });
 
