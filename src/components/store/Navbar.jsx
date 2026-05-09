@@ -1,20 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Sun, Moon } from 'lucide-react';
+import { Menu, X, ShoppingBag, Sun, Moon, Heart } from 'lucide-react';
 import Logo from './Logo';
 import { useTheme } from '@/lib/ThemeContext';
-
-const navLinks = [
-  { label: 'ARCHIVE', path: '/shop' },
-  { label: 'OLD MONEY', path: '/shop?category=old_money' },
-  { label: 'STAR BOY', path: '/shop?category=star_boy' },
-  { label: 'ABOUT', path: '/about' },
-];
+import { getWishlist } from '@/lib/wishlist';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/api/apiClient';
 
 export default function Navbar({ cartCount = 0 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggle } = useTheme();
+  const [wishlistCount, setWishlistCount] = useState(getWishlist().length);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => api.categories.list(),
+    initialData: [],
+    staleTime: 60000,
+  });
+
+  const navLinks = [
+    { label: 'ARCHIVE', path: '/shop' },
+    ...categories.filter(c => c.status === 'active').slice(0, 3).map(c => ({
+      label: c.label.toUpperCase(),
+      path: `/shop?category=${c.key}`,
+    })),
+    { label: 'ABOUT', path: '/about' },
+  ];
+
+  useEffect(() => {
+    const handler = () => setWishlistCount(getWishlist().length);
+    window.addEventListener('wishlist-updated', handler);
+    return () => window.removeEventListener('wishlist-updated', handler);
+  }, []);
 
   return (
     <>
@@ -37,7 +56,7 @@ export default function Navbar({ cartCount = 0 }) {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 z-50">
+          <div className="flex items-center gap-3 z-50">
             {/* Theme toggle */}
             <button
               onClick={toggle}
@@ -46,17 +65,27 @@ export default function Navbar({ cartCount = 0 }) {
             >
               {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
-            <Link to="/cart" className="relative group">
+            {/* Wishlist */}
+            <Link to="/wishlist" className="relative group p-1">
+              <Heart className="w-5 h-5 text-foreground group-hover:text-accent transition-colors" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-accent-foreground text-[9px] font-mono flex items-center justify-center rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+            {/* Cart */}
+            <Link to="/cart" className="relative group p-1">
               <ShoppingBag className="w-5 h-5 text-foreground group-hover:text-accent transition-colors" />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent text-accent-foreground text-[9px] font-mono flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-accent-foreground text-[9px] font-mono flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
             </Link>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden"
+              className="md:hidden p-1"
             >
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
