@@ -14,14 +14,23 @@
       "type": "number",
       "description": "Price in USD"
     },
+    "sale_price": {
+      "type": "number",
+      "description": "Sale price (overrides price when active)"
+    },
+    "sale_ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Sale expiry datetime"
+    },
+    "on_sale": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is product on sale"
+    },
     "category": {
       "type": "string",
-      "enum": [
-        "old_money",
-        "star_boy",
-        "essentials"
-      ],
-      "description": "Style category"
+      "description": "Category key (custom, from categories table)"
     },
     "collection": {
       "type": "string",
@@ -34,12 +43,20 @@
       },
       "description": "Available sizes"
     },
+    "size_stock": {
+      "type": "object",
+      "description": "Stock per size: {S: 10, M: 5}"
+    },
     "colors": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "description": "Available colors"
+    },
+    "color_images": {
+      "type": "object",
+      "description": "Image per color: {Navy: 'url', Black: 'url'}"
     },
     "image_url": {
       "type": "string",
@@ -49,9 +66,20 @@
       "type": "string",
       "description": "Lifestyle/secondary image"
     },
+    "extra_images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional gallery images"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Product video URL shown in gallery"
+    },
     "stock": {
       "type": "number",
-      "description": "Current stock quantity"
+      "description": "Total stock quantity"
     },
     "featured": {
       "type": "boolean",
