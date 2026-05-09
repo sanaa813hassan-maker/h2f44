@@ -1,17 +1,11 @@
-// Frontend API client — imported by React components via @/api/apiClient
-// This file lives in src/api/ so the @/ alias resolves correctly during Vite builds.
-// The root /api/ folder is kept separately for Vercel Serverless Functions.
+// API client that replaces base44 SDK - connects to Vercel serverless functions → NeonDB
 
 const BASE = '';
 
 async function request(method, path, body, params) {
-  let url = BASE + path;
+  let url = path;
   if (params) {
-    const qs = new URLSearchParams(
-      Object.entries(params).filter(
-        ([, v]) => v !== undefined && v !== null && v !== ''
-      )
-    );
+    const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''));
     if (qs.toString()) url += '?' + qs.toString();
   }
   const res = await fetch(url, {
@@ -31,6 +25,12 @@ export const api = {
     create: (data) => request('POST', '/api/products', data),
     update: (id, data) => request('PUT', `/api/products?id=${id}`, data),
     delete: (id) => request('DELETE', `/api/products?id=${id}`),
+  },
+  categories: {
+    list: () => request('GET', '/api/categories'),
+    create: (data) => request('POST', '/api/categories', data),
+    update: (id, data) => request('PUT', `/api/categories?id=${id}`, data),
+    delete: (id) => request('DELETE', `/api/categories?id=${id}`),
   },
   orders: {
     list: () => request('GET', '/api/orders'),
