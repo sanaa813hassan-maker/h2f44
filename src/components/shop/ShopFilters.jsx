@@ -64,25 +64,30 @@ function CustomDropdown({ label, options, selected, onSelect }) {
   );
 }
 
-export default function ShopFilters({ products, onFilterChange }) {
-  const [category, setCategory] = useState('all');
+export default function ShopFilters({ products, categories = [], onFilterChange, currentCategory }) {
+  const [category, setCategory] = useState(currentCategory || 'all');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+
+  useEffect(() => {
+    if (currentCategory && currentCategory !== category) setCategory(currentCategory);
+  }, [currentCategory]);
 
   // Derive available sizes and colors from all products
   const allSizes = [...new Set((products || []).flatMap(p => Array.isArray(p.sizes) ? p.sizes : []))].sort();
   const allColors = [...new Set((products || []).flatMap(p => Array.isArray(p.colors) ? p.colors : []))].sort();
 
-  const categories = [
+  // Build category tabs from dynamic categories
+  const categoryTabs = [
     { value: 'all', label: 'ALL' },
-    { value: 'old_money', label: 'OLD MONEY' },
-    { value: 'star_boy', label: 'STAR BOY' },
-    { value: 'essentials', label: 'ESSENTIALS' },
+    ...(categories.filter(c => c.status === 'active').map(c => ({ value: c.key, label: c.label.toUpperCase() }))),
   ];
 
   const sortOptions = [
     { value: 'newest', label: 'Newest' },
+    { value: 'price_asc', label: 'Price ↑' },
+    { value: 'price_desc', label: 'Price ↓' },
     { value: 'name_az', label: 'Name A–Z' },
     { value: 'name_za', label: 'Name Z–A' },
   ];
@@ -104,7 +109,7 @@ export default function ShopFilters({ products, onFilterChange }) {
     <div className="space-y-6">
       {/* Category tabs */}
       <div className="flex flex-wrap gap-6">
-        {categories.map((cat) => (
+        {categoryTabs.map((cat) => (
           <button
             key={cat.value}
             onClick={() => setCategory(cat.value)}
