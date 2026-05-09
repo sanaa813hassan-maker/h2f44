@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Tag, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Tag, ExternalLink, LogOut } from 'lucide-react';
+import AdminLogin from './AdminLogin';
+import { isAdminAuthenticated, logoutAdmin } from '@/lib/adminAuth';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
@@ -10,6 +13,20 @@ const navItems = [
 
 export default function AdminLayout() {
   const location = useLocation();
+  const [authenticated, setAuthenticated] = useState(() => isAdminAuthenticated());
+
+  useEffect(() => {
+    setAuthenticated(isAdminAuthenticated());
+  }, []);
+
+  if (!authenticated) {
+    return <AdminLogin onSuccess={() => setAuthenticated(true)} />;
+  }
+
+  const handleLogout = () => {
+    logoutAdmin();
+    setAuthenticated(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex">
@@ -40,7 +57,7 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="border-t border-white/8 pt-4 mt-4">
+        <div className="border-t border-white/8 pt-4 mt-4 space-y-2">
           <Link
             to="/"
             className="flex items-center gap-2 text-white/30 hover:text-white/60 font-mono text-[10px] tracking-wider transition-colors"
@@ -48,6 +65,13 @@ export default function AdminLayout() {
             <ExternalLink className="w-3 h-3" />
             View Store
           </Link>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-white/30 hover:text-red-400 font-mono text-[10px] tracking-wider transition-colors w-full"
+          >
+            <LogOut className="w-3 h-3" />
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -57,7 +81,7 @@ export default function AdminLayout() {
           H<sup className="text-[#C5A059] text-[8px]">2</sup>F
           <span className="font-mono text-[9px] tracking-wider text-white/30 ml-2">Admin</span>
         </Link>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -69,6 +93,10 @@ export default function AdminLayout() {
               </Link>
             );
           })}
+          <button onClick={handleLogout} className="flex flex-col items-center gap-0.5">
+            <LogOut className="w-5 h-5 text-white/40 hover:text-red-400 transition-colors" />
+            <span className="font-mono text-[7px] tracking-wider text-white/30">Logout</span>
+          </button>
         </div>
       </div>
 
