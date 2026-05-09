@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { LayoutGrid, Rows } from 'lucide-react';
 import HeroSection from '../components/store/HeroSection';
 import ProductCard from '../components/store/ProductCard';
 
@@ -13,6 +15,15 @@ export default function Home() {
     queryFn: () => api.products.filter({ status: 'active', limit: 6 }),
     initialData: [],
   });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => api.categories.list(),
+    initialData: [],
+  });
+
+  const categoryMap = useMemo(() => Object.fromEntries(categories.map(c => [c.key, c])), [categories]);
+  const [gridView, setGridView] = useState(false);
 
   return (
     <div>
@@ -48,13 +59,35 @@ export default function Home() {
 
       {/* Staggered Product Grid */}
       <section className="px-6 md:px-12 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+        {/* View toggle */}
+        <div className="flex justify-end mb-6">
+          <div className="flex items-center border border-border">
+            <button
+              onClick={() => setGridView(false)}
+              className={`p-2.5 transition-colors ${!gridView ? 'bg-foreground text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              title="Staggered view"
+            >
+              <Rows className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setGridView(true)}
+              className={`p-2.5 transition-colors ${gridView ? 'bg-foreground text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              title="Grid view"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className={gridView ? 'grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6' : 'grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8'}>
           {products.map((product, i) => (
             <ProductCard
               key={product.id}
               product={product}
               index={i}
-              large={i % 3 === 0}
+              large={!gridView && i % 3 === 0}
+              category={categoryMap[product.category]}
+              forceFullWidth={gridView}
             />
           ))}
         </div>
