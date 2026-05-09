@@ -1,9 +1,10 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Tag, ExternalLink } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { label: 'Products', icon: Package, path: '/admin/products' },
+  { label: 'Categories', icon: Tag, path: '/admin/categories' },
   { label: 'Orders', icon: ShoppingCart, path: '/admin/orders' },
 ];
 
@@ -54,13 +55,17 @@ export default function AdminLayout() {
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/8 px-4 py-3 flex items-center justify-between">
         <Link to="/admin" className="font-serif text-lg">
           H<sup className="text-[#C5A059] text-[8px]">2</sup>F
+          <span className="font-mono text-[9px] tracking-wider text-white/30 ml-2">Admin</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <Link key={item.path} to={item.path}>
+              <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5">
                 <item.icon className={`w-5 h-5 ${isActive ? 'text-[#C5A059]' : 'text-white/40'}`} />
+                <span className={`font-mono text-[7px] tracking-wider ${isActive ? 'text-[#C5A059]' : 'text-white/30'}`}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
